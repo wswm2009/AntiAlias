@@ -10,13 +10,13 @@
 * 输入参数:无
 * 输出参数：无
 * 返回值:无
-* 作者: wrassee@sina.com
-* 时间: 2012-09-01
+* 作者: wswm2009@163.com
+* 时间: 2015年12月18日
 *********************************************************************/
 Clog::Clog(){
 	SetLevel(0);
-	SetAppName(L"app");
-	SetLogRootPath(L"c:\\Mylog");
+	SetAppName("app");
+	SetLogRootPath("c:\\Mylog");
 	SetLogWriteModel(1);
 }
 
@@ -32,8 +32,8 @@ Clog::Clog(){
 *int writeModel 日志写入模式，0表示分割写入，1表示写在一个文件里面
 * 输出参数：无
 * 返回值:无
-* 作者: wrassee@sina.com
-* 时间: 2012-09-01
+* 作者: wswm2009@163.com
+* 时间: 2015年12月18日
 *********************************************************************/
 Clog::Clog(TCHAR* rootPath, TCHAR* appName, LOGTYPE level, WRTMOD writeModel){
 	SetLogRootPath(rootPath);
@@ -41,7 +41,39 @@ Clog::Clog(TCHAR* rootPath, TCHAR* appName, LOGTYPE level, WRTMOD writeModel){
 	SetLevel(level);
 	SetLogWriteModel(writeModel);
 }
+/*********************************************************************
+* 函数名称:void Clog::memory(char * pstrFmt, ...)
+* 说明:日志调试模式函数，支持变长参数
+* 调用者：任何需要写日志的地方
+* 输入参数:
+* char *pstrFmt  --  日志内容
+* ...            --  变长参数
+* 输出参数：
+* 无
+* 返回值:
+* void  --
+* 作者: wswm2009@163.com
+* 时间: 2015年12月18日
+*********************************************************************/
+void Clog::memory(TCHAR * pstrFmt, ...){
+	if (glevel <= 0)
+	{
+		va_list v1;
+		TCHAR strText[MAX_LOGTEXT_LEN];
+		va_start(v1, pstrFmt);
+#ifdef _UNICODE
+		vswprintf_s(strText, pstrFmt, v1);
+#else
+		_vsnprintf_s(strText, MAX_LOGTEXT_LEN, pstrFmt, v1);
+#endif
+		va_end(v1);
+		Write_Log(LOG_TYPE_MEMORY, strText);
+	}
+	else{
+		return;
+	}
 
+}
 
 /*********************************************************************
 * 函数名称:void Clog::debug(char * pstrFmt, ...)
@@ -54,8 +86,8 @@ Clog::Clog(TCHAR* rootPath, TCHAR* appName, LOGTYPE level, WRTMOD writeModel){
 * 无
 * 返回值:
 * void  --
-* 作者: wrassee@sina.com
-* 时间: 2012-09-01
+* 作者: wswm2009@163.com
+* 时间: 2015年12月18日
 *********************************************************************/
 void Clog::debug(TCHAR * pstrFmt, ...){
 	if (glevel <= 0)
@@ -92,8 +124,8 @@ void Clog::debug(TCHAR * pstrFmt, ...){
 * 无
 * 返回值:
 * void  --
-* 作者: wrassee@sina.com
-* 时间: 2012-09-01
+* 作者: wswm2009@163.com
+* 时间: 2015年12月18日
 *********************************************************************/
 void Clog::info(TCHAR * pstrFmt,...){
 	if (glevel <= 1)
@@ -126,8 +158,8 @@ void Clog::info(TCHAR * pstrFmt,...){
 * 无
 * 返回值:
 * void  --
-* 作者: wrassee@sina.com
-* 时间: 2012-09-01
+* 作者: wswm2009@163.com
+* 时间: 2015年12月18日
 *********************************************************************/
 void Clog::error(TCHAR * pstrFmt,...){
 	if (glevel <= 2)
@@ -159,8 +191,8 @@ void Clog::error(TCHAR * pstrFmt,...){
 * 无
 * 返回值:
 * void  --
-* 作者: wrassee@sina.com
-* 时间: 2012-09-01
+* 作者: wswm2009@163.com
+* 时间: 2015年12月18日
 *********************************************************************/
 void Clog::system(TCHAR * pstrFmt,...){
 	if (glevel <= 3)
@@ -191,8 +223,8 @@ void Clog::system(TCHAR * pstrFmt,...){
 * 无
 * 返回值:
 * void  --
-* 作者: wrassee@sina.com
-* 时间: 2012-09-01
+* 作者: wswm2009@163.com
+* 时间: 2015年12月18日
 *********************************************************************/
 void Clog::SetLogRootPath(TCHAR * pStrPath0){
 	gLogRootPath = pStrPath0;
@@ -209,8 +241,8 @@ void Clog::SetLogRootPath(TCHAR * pStrPath0){
 * 无
 * 返回值:
 * void  --
-* 作者: wrassee@sina.com
-* 时间: 2012-09-01
+* 作者: wswm2009@163.com
+* 时间: 2015年12月18日
 *********************************************************************/
 void Clog::SetAppName(TCHAR* appName0){
 	gszAppName = appName0;
@@ -227,8 +259,8 @@ void Clog::SetAppName(TCHAR* appName0){
 * 无
 * 返回值:
 * void  --
-* 作者: wrassee@sina.com
-* 时间: 2012-09-01
+* 作者: wswm2009@163.com
+* 时间: 2015年12月18日
 *********************************************************************/
 void Clog::SetLogWriteModel(int model){
 	gLogWrtMod = model;
@@ -245,8 +277,8 @@ void Clog::SetLogWriteModel(int model){
 * 无
 * 返回值:
 * void  --
-* 作者: wrassee@sina.com
-* 时间: 2012-09-01
+* 作者: wswm2009@163.com
+* 时间: 2015年12月18日
 *********************************************************************/
 void Clog::SetLevel(int level0){
 	glevel = level0;
@@ -265,38 +297,42 @@ void Clog::SetLevel(int level0){
 * 无
 * 返回值:
 * void  --
-* 作者: wrassee@sina.com
-* 时间: 2012-09-01
+* 作者: wswm2009@163.com
+* 时间: 2015年12月18日
 *********************************************************************/
-void Clog::Write_Log(unsigned int uiLogType, TCHAR *pstrFmt, ...)
+void Clog::Write_Log(unsigned int uiLogType, TCHAR *pstrFmt)
 {
 #if _LOG_WRITE_SWITCH_   /* 写日志与否的编译开关*/
-	LOG_DATA data = {0};
-	time_t curTime = {0};
-	struct tm *mt=new struct tm;
-	va_list v1;
-	memset(&data, 0, sizeof(LOG_DATA));
-	va_start(v1, pstrFmt);
-#ifdef _UNICODE
-	vswprintf_s(data.strText, pstrFmt, v1);
-#else
-	_vsnprintf_s(data.strText, MAX_LOGTEXT_LEN, pstrFmt, v1);
-#endif
-	va_end(v1);
-	data.iType = uiLogType;
-	curTime = time(NULL);
-	localtime_s(mt,&curTime);
-#ifdef _UNICODE
-	wcsftime(data.strDate, sizeof(data.strDate), L"%Y-%m-%d", mt);
-	wcsftime(data.strTime, sizeof(data.strTime), L"%H:%M:%S", mt);
-#else
-	strftime(data.strDate, sizeof(data.strDate), "%Y-%m-%d", mt);
-	strftime(data.strTime, sizeof(data.strTime), "%H:%M:%S", mt);
-#endif // _UNICODE
+	LOG_DATA data ;
+	time_t curTime;
 
+#ifdef _UNICODE
+	struct tm mt;
+#else
+	struct tm *mt=NULL;
+#endif
 	
+	memset(&data, 0, sizeof(LOG_DATA));
+
+	_snprintf_s(data.strText, MAX_LOGTEXT_LEN, pstrFmt);
+
+	data.iType = uiLogType;
+	if (LOG_TYPE_MEMORY!=uiLogType)  //当日志类型为打印内存  就不需要加当前时间
+	{
+		curTime = time(NULL);
+		localtime_s(mt, &curTime);
+#ifdef _UNICODE
+		wcsftime(data.strDate, sizeof(data.strDate), L"%Y-%m-%d", &mt);
+		wcsftime(data.strTime, sizeof(data.strTime), L"%H:%M:%S", &mt);
+#else
+		strftime(data.strDate, sizeof(data.strDate), "%Y-%m-%d", mt);
+		strftime(data.strTime, sizeof(data.strTime), "%H:%M:%S", mt);
+#endif // _UNICODE
+	}
+
+
 	Write_Log_Text(&data);
-	delete[] mt;
+	
 #endif _LOG_WRITE_SWITCH_
 }
 
@@ -312,8 +348,8 @@ void Clog::Write_Log(unsigned int uiLogType, TCHAR *pstrFmt, ...)
 * 返回值:
 * int  -- LOG_FAILED:  失败
 *      -- LOG_SUCCESS: 成功
-* 作者: wrassee@sina.com
-* 时间: 2012-09-01
+* 作者: wswm2009@163.com
+* 时间: 2015年12月18日
 *********************************************************************/
 int  Clog::GetLogPath(TCHAR *pStrPath)
 {
@@ -351,8 +387,8 @@ int  Clog::GetLogPath(TCHAR *pStrPath)
 * 返回值:
 * int  -- LOG_FAILED:  失败
 *      -- LOG_SUCCESS: 成功
-* 作者: wrassee@sina.com
-* 时间: 2012-09-01
+* 作者: wswm2009@163.com
+* 时间: 2015年12月18日
 *********************************************************************/
 int Clog::GetLogFileName(int iLogType, const TCHAR *pStrPath, TCHAR *pStrName)
 {
@@ -449,8 +485,8 @@ __BRK:
 * 返回值:
 * int  -- LOG_FAILED:  失败
 *      -- LOG_SUCCESS: 成功
-* 作者: wrassee@sina.com
-* 时间: 2012-09-01
+* 作者: wswm2009@163.com
+* 时间: 2015年12月18日
 *********************************************************************/
 int Clog::Create_LogDir(const TCHAR *pStrPath)
 {
@@ -529,8 +565,8 @@ int Clog::Create_LogDir(const TCHAR *pStrPath)
 * 返回值:
 * int  -- LOG_FAILED:  失败
 *      -- LOG_SUCCESS: 成功
-* 作者: wrassee@sina.com
-* 时间: 2012-09-01
+* 作者: wswm2009@163.com
+* 时间: 2015年12月18日
 *********************************************************************/
 int Clog::Create_LogFile(const TCHAR *pStrFile, int iPos)
 {
@@ -573,8 +609,8 @@ int Clog::Create_LogFile(const TCHAR *pStrFile, int iPos)
 * 返回值:
 * int  -- LOG_BOOL_FALSE:  不存在
 *      -- LOG_BOOL_TRUE: 存在
-* 作者: wrassee@sina.com
-* 时间: 2012-09-01
+* 作者: wswm2009@163.com
+* 时间: 2015年12月18日
 *********************************************************************/
 int Clog::IsFileExist(const TCHAR *pStrFile)
 {
@@ -605,8 +641,8 @@ int Clog::IsFileExist(const TCHAR *pStrFile)
 * 无
 * 返回值:
 * DWORD -- 文件大小
-* 作者: wrassee@sina.com
-* 时间: 2012-09-01
+* 作者: wswm2009@163.com
+* 时间: 2015年12月18日
 *********************************************************************/
 DWORD Clog::GetFileLenth(const TCHAR *pFile)
 {
@@ -630,8 +666,8 @@ DWORD Clog::GetFileLenth(const TCHAR *pFile)
 * 返回值:
 * int  -- LOG_FAILED:  失败
 *      -- LOG_SUCCESS: 成功
-* 作者: wrassee@sina.com
-* 时间: 2012-09-01
+* 作者: wswm2009@163.com
+* 时间: 2015年12月18日
 *********************************************************************/
 int Clog::Write_Log_Text(LPLOG_DATA lpLogData)
 {
@@ -647,49 +683,67 @@ int Clog::Write_Log_Text(LPLOG_DATA lpLogData)
 	memset(szDesLogText, 0, MAX_LOGTEXT_LEN);
 	GetLogPath(szFilePath);
 	GetLogFileName(lpLogData->iType, szFilePath, szFileName);
-#ifdef _UNICODE
-	_wfopen_s(&pFile,szFileName, L"a+");
-#else
-	pFile = fopen(szFileName, "a+");
-#endif
+
+
+
 	
-    if(NULL == pFile)
+   
+	
+	if(gLogWrtMod)
 	{
-        return LOG_FAILED;
-	}
-	
-	if(gLogWrtMod){
 		TCHAR *logType;
 		switch(lpLogData->iType)
 		{
 		case 0:
-			logType = L"DEBUG";
+			logType = "DEBUG";
+			wsprintf(lpLogData->strFileMode, "a+");
 			break;
 		case 1:
-			logType = L"INFO";
+			wsprintf(lpLogData->strFileMode, "a+");
+			logType = "INFO";
 			break;
 		case 2:
-			logType = L"ERROR";
+			wsprintf(lpLogData->strFileMode, "a+");
+			logType ="ERROR";
 			break;
 		case 3:
-			logType = L"SYSTEM";
+			wsprintf(lpLogData->strFileMode, "a+");
+			logType = "SYSTEM";
+			break;
+		case 4:
+			logType = "MEMORY";
+			wsprintf(lpLogData->strFileMode, "a+");
+			wsprintf(szLogText, "%s", lpLogData->strText);
+			goto LabelOpen;
 			break;
 		default:
-			logType = L"UNKNOW";
+			logType = "UNKNOW";
 			
 		}
-		wsprintf(szLogText, L"%s\t| %s %s | %s\n", logType, lpLogData->strDate, lpLogData->strTime, lpLogData->strText);
+		wsprintf(szLogText, "%s\t| %s %s | %s\n", logType, lpLogData->strDate, lpLogData->strTime, lpLogData->strText);
 		
 	}else{
-		wsprintf(szLogText, L"%s %s | %s\n", lpLogData->strDate, lpLogData->strTime,lpLogData->strText);
+		wsprintf(szLogText, "%s %s | %s\n", lpLogData->strDate, lpLogData->strTime,lpLogData->strText);
 		
 	}
-	dwLen = lstrlen(szLogText);
+LabelOpen:
+#ifdef _UNICODE
+	_wfopen_s(&pFile, szFileName, lpLogData->strFileMode);
+#else
+	fopen_s(&pFile ,szFileName, lpLogData->strFileMode);
+#endif
+
+	if (NULL == pFile)
+	{
+		return LOG_FAILED;
+	}
+	
 #ifdef _UNICODE
 	UnicodeToANSI(szLogText, szDesLogText);
 #else
-	strcpy(szDesLogText,szLogText);
+	strcpy_s(szDesLogText,szLogText);
 #endif
+	dwLen = lstrlen(szDesLogText);
 	fwrite(szDesLogText, sizeof(BYTE), dwLen, pFile);
 	fclose(pFile);
 	return LOG_SUCCESS;

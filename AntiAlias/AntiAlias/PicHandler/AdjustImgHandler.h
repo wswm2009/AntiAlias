@@ -89,6 +89,8 @@ public:
 	//返回处理后的结果图
 	Bitmap* GetResultImage();
 
+	void OnSaveImage(CString strImgPath);
+
 	bool CloseImage(Bitmap *pBitmap);
 
 	//可处理主图
@@ -114,7 +116,7 @@ public:
 	//亮度和对比度功能入口
 	void BrightAndContrast(short ArgBright,short ArgContrast,BOOL ArgIsOld);
 	void AutoBrightAndContrast(double *OutValue, long long ArgIsOld);
-	int  GetEncoderClsid(const WCHAR* format, CLSID* pClsid);
+	int  GetEncoderClsid(const TCHAR* format, CLSID* pClsid);
 
 	//消除锯齿 Add By Wm 2015年12月15日 17:26:37
 	void AntiAlias();

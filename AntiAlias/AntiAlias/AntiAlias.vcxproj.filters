@@ -48,9 +48,6 @@
     <ClInclude Include="PicHandler\Filehandler.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="PicHandler\Clog.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AntiAlias.cpp">
@@ -69,9 +66,6 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="PicHandler\Filehandler.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="PicHandler\Clog.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

@@ -39,4 +39,5 @@ protected:
 	CComboBox m_CBSize;
 public:
 	CEdit m_EtToler;
+	afx_msg void OnBnClickedBtnSvae();
 };

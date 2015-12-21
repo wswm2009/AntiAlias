@@ -66,6 +66,7 @@ BEGIN_MESSAGE_MAP(CAntiAliasDlg, CDialogEx)
 	ON_WM_QUERYDRAGICON()
 	ON_BN_CLICKED(IDC_BTN_LOAD, &CAntiAliasDlg::OnBnClickedBtnLoad)
 	ON_BN_CLICKED(IDC_BTN_ANTIALIAS, &CAntiAliasDlg::OnBnClickedBtnAntialias)
+	ON_BN_CLICKED(IDC_BTN_SVAE, &CAntiAliasDlg::OnBnClickedBtnSvae)
 END_MESSAGE_MAP()
 
 
@@ -106,7 +107,7 @@ BOOL CAntiAliasDlg::OnInitDialog()
 	m_CBSize.InsertString(2,L"3x3");
 	m_CBSize.SetCurSel(0);
 
-	m_EtToler.SetWindowTextW(L"32");
+	m_EtToler.SetWindowText(L"32");
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
 
@@ -172,17 +173,14 @@ void CAntiAliasDlg::OnBnClickedBtnLoad()
 	if (dlg.DoModal() == IDOK)
 	{
 
-		CString strPath = dlg.GetPathName();
+		CString in_strPath = dlg.GetPathName();
 		SAFE_DELETE(m_pBitmap);
-		m_pBitmap = new Bitmap(strPath);
+
+		m_pBitmap = new Bitmap(in_strPath);
 		if (m_pBitmap == NULL)
 			return;
 		m_AdjustHandler.SetNeedProcessImage(m_pBitmap);
 	}
-	Clog log(L"C:\\Mylog", L"app", 0, WRITE_MODEL_INALLFILE);
-	log.debug(L"debug test kk ll%s;", L"1234");
-	log.info(L"223123232");
-
 }
 
 
@@ -191,4 +189,29 @@ void CAntiAliasDlg::OnBnClickedBtnAntialias()
 	// TODO:  在此添加控件通知处理程序代码
 	
 	m_AdjustHandler.AntiAlias();
+}
+
+
+void CAntiAliasDlg::OnBnClickedBtnSvae()
+{
+	// TODO:  在此添加控件通知处理程序代码
+	CString defaultDir = _T("C:\\");   //默认打开的文件路径  
+	CString fileName = _T("test.bmp");         //默认打开的文件名  
+	CString filter = _T("文件 (*.doc; *.ppt; *.xls)|*.doc;*.ppt;*.xls||");   //文件过虑的类
+	CFileDialog dlg(FALSE, NULL, fileName, OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT, _T("All File |*.*|Jpeg File(*.jpg;*.jpeg;*.jpe)|*.jpg;*.jpeg;*.jpe|Windows(*.bmp)|*.bmp|CompuServe GIF(*.gif)|*.gif|Png文件(*.png)|*.png||"), this);
+	dlg.m_ofn.lpstrTitle = L"Save Image";
+	if (dlg.DoModal() == IDOK)
+	{
+		CString strPath = dlg.GetPathName();
+
+		if (m_AdjustHandler.m_pMainBitmap)
+		{
+			m_AdjustHandler.OnSaveImage(strPath);
+		}
+		else
+		{
+			MessageBox(L"请先载入图片再保存");
+		}
+
+	}
 }

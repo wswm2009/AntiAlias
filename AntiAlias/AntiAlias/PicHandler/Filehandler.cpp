@@ -48,7 +48,7 @@ void LogPrintf(char *FileName, void *logAddr, unsigned int logSize, int logForma
 	switch (logMode)
 	{
 	case 0://将LogAddr以16进制打印
-		fopen_s(&pFile,FileName, "wb");
+		fopen_s(&pFile,FileName, "ab+");
 		fwrite(logAddr, logSize, 1, pFile);
 		break;
 	case 1://将LogAddr以文本打印
@@ -70,5 +70,18 @@ void LogPrintf(char *FileName, void *logAddr, unsigned int logSize, int logForma
 	fclose(pFile);
 }
 
+int WriteLog(char *fmt, ...)
+{
+	int n = 0;
+	FILE *fp = NULL;
+	va_list args = NULL;
+	char sprint_buf[1024] = { 0 };
+	_wfopen_s(&fp, L"C:\\MyLog\\DesData2.txt", L"a+");
+	va_start(args, fmt);
+	n = vfprintf(fp, fmt, args);
+	va_end(args);
+	fclose(fp);
+	return n;
+}
 
 #endif     //   FILEHANDLE_CPP 

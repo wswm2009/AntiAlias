@@ -47,6 +47,8 @@ using namespace std;
 #define LOG_TYPE_INFO    1             /* 日志类型: 信息类型*/
 #define LOG_TYPE_ERROR   2             /* 日志类型: 错误类型*/
 #define LOG_TYPE_SYSTEM  3             /* 日志类型: 系统类型*/
+#define LOG_TYPE_MEMORY  4             /* 日志类型: 内存类型*/
+
 #define TEST_CASE_MAX_FILE_LEN (1024)  /* 测试函数中文件内容最大长度*/
 
 
@@ -69,6 +71,7 @@ typedef struct tagLOG_DATA             /* 日志内容结构体*/
 	TCHAR             strDate[11];		   /* 日期:格式为如:2012-09-01*/
 	TCHAR             strTime[9];         /* 时间:格式为如:16:10:57*/
     unsigned int	  iType;               /* 日志类型:4种:DEBUG(0)/INFO(1)/ERROR(2)/SYSTEM(3)*/
+	TCHAR             strFileMode[5];      /*日志输入到文件类型: ASCII/HEX/等等*/
     TCHAR             strText[MAX_LOGTEXT_LEN]; /*日志内容*/
 }LOG_DATA, *LPLOG_DATA;
 #pragma pack(pop)
@@ -83,6 +86,7 @@ public:
 	void error(TCHAR* pstrFmt, ...);
 	void system(TCHAR* pstrFmt, ...);
 
+	void memory(TCHAR *pstrFmt, ...);
 	void SetAppName(TCHAR* appName0);
 	void SetLogRootPath(TCHAR * pStrPath0);
 	void SetLogWriteModel(int model);
@@ -97,10 +101,14 @@ private:
 	int GetLogPath(TCHAR *pStrPath);
 	DWORD GetFileLenth(const TCHAR *pFile);
 	int Write_Log_Text(LPLOG_DATA lpLogData);
-	void Write_Log(unsigned int uiLogType, TCHAR *pstrFmt, ...);
+	void Write_Log(unsigned int uiLogType, TCHAR *pstrFmt);
 
 	//字符转换
 	BOOL UnicodeToANSI(const TCHAR* SrcStr, TCHAR * DesStr);
 
 };
+
+
+
+
 #endif

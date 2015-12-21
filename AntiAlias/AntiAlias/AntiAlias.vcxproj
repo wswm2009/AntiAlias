@@ -54,6 +54,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>$(ProjectDir)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -105,7 +106,6 @@
     <ClInclude Include="AntiAliasDlg.h" />
     <ClInclude Include="PicHandler\AdjustImgHandler.h" />
     <ClInclude Include="PicHandler\BitmapUtil.h" />
-    <ClInclude Include="PicHandler\Clog.h" />
     <ClInclude Include="PicHandler\defs.h" />
     <ClInclude Include="PicHandler\Filehandler.h" />
     <ClInclude Include="PicHandler\GdiPlusEnv.h" />
@@ -118,7 +118,6 @@
     <ClCompile Include="AntiAliasDlg.cpp" />
     <ClCompile Include="PicHandler\AdjustImgHandler.cpp" />
     <ClCompile Include="PicHandler\BitmapUtil.cpp" />
-    <ClCompile Include="PicHandler\Clog.cpp" />
     <ClCompile Include="PicHandler\Filehandler.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

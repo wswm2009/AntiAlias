@@ -1,5 +1,5 @@
 
-#include "stdAfx.h"
+#include "stdafx.h"
 #include "AdjustImgHandler.h"
 #include "defs.h"
 #include "Filehandler.h"
@@ -33164,6 +33164,14 @@ void CAdjustImgHandler::SetParentHwnd(HWND hParent)
 {
 	m_hParentHwnd = hParent;
 }
+void CAdjustImgHandler::OnSaveImage(CString strImgPath)
+{
+	CLSID pngClsid;
+	GetEncoderClsid(L"image/bmp", &pngClsid);
+	m_pResultBitmap->Save(strImgPath, &pngClsid);
+	return;
+}
+
 //设置需要处理图片
 bool CAdjustImgHandler::SetNeedProcessImage(Bitmap* pInputBitmap)
 {
@@ -33332,8 +33340,8 @@ void CAdjustImgHandler::AntiAlias()
 	pvBuffB = ((BYTE *)pBuffB + pt.y*PicWidth + pt.x);
 	BYTE *pOutBuff3000 = new BYTE[0x3000];
 	ZeroMemory(pOutBuff3000, 0x3000);
+	//产生0x3000个字节的数据
 	sub_616990((int)pvBuffB,(int)pvBuffG,(int)pvBuffR,0,vSzie,hSzie,PicWidth,0,0,(int)pOutBuff3000);
-	//LogPrintf("C:\\OutData", pOutBuff, 0x3000, 0, 0);
 	BYTE *pOutbuff600 = new BYTE[0x600];
 	ZeroMemory(pOutBuff3000, 0x600);
 	BYTE *pUnknowStrc = new BYTE[0x148];
@@ -33341,11 +33349,13 @@ void CAdjustImgHandler::AntiAlias()
 	*(pUnknowStrc + 0x130) = 0;
 	*(pUnknowStrc + 0x134) = Toler;
 	*(pUnknowStrc + 0x136) = 1;//1代表勾选了 消除锯齿
+	//从0x3000字节的数据产生0x600个字节的数据
 	sub_EFCFE0((int)pUnknowStrc, (int)pOutBuff3000, pOutbuff600); //给0x600个字节的内存赋值
 
 	//消除锯齿第二部处理
 	BYTE *pOutBuff = new BYTE[PicWidth*PicHeight];
 	sub_619320((int)pBuffB, (int)pBuffG, (int)pBuffR, (int)pOutBuff, PicHeight, PicWidth, PicWidth, PicWidth, (int)pOutbuff600);
+
 }
 
 UCHAR *pDword_26F7C34[0xFA][2];
@@ -33423,6 +33433,7 @@ int __cdecl sub_619320(int pRBuff, int pGBuff, int pBBuff, int pOutBuff, int Pic
 	bool v25 = 0; // zf@15
 	int v26 = 0; // [sp+4h] [bp-8h]@1
 	int v27 = 0; // [sp+8h] [bp-4h]@1
+	int iCount = 0;
 
 	v9 = PicWidth;
 	result = _PicWidth - PicWidth;
@@ -33468,7 +33479,12 @@ int __cdecl sub_619320(int pRBuff, int pGBuff, int pBBuff, int pOutBuff, int Pic
 					if (*(_BYTE *)v24 >= BYTE3(_PicWidth))
 						v24 = (int)((char *)&_PicWidth + 3);
 					*(_BYTE *)pOutBuff = *(_BYTE *)v24;
-					LogPrintf("C:\\MyLog\\DesData2.txt", (void *)pOutBuff, 1, 0, 0);
+					if (0xFC==iCount)
+					{
+						gDebugValue += 0x20;
+					}
+					iCount++;
+					//LogPrintf("C:\\MyLog\\DesData2.txt", (void *)pOutBuff, 1, 0, 0);
 					v25 = __PicWidth-- == 1;
 					++pOutBuff;
 				} while (!v25);
@@ -41775,7 +41791,7 @@ void MakeMidValue(UCHAR *ArgValue, short ArgBright, short ArgContrast, long long
 
 }
 //GetEncoderClsid函数，方便的获得编码器的CLSID
-int CAdjustImgHandler:: GetEncoderClsid(const WCHAR* format, CLSID* pClsid)
+int CAdjustImgHandler:: GetEncoderClsid(const TCHAR* format, CLSID* pClsid)
 {
 	UINT num= 0;
 	UINT size= 0;

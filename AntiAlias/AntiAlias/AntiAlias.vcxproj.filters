@@ -48,6 +48,12 @@
     <ClInclude Include="PicHandler\Filehandler.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\Desktop\imgsave.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="PicHandler\mtdefine.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AntiAlias.cpp">

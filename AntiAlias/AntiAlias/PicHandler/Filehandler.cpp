@@ -84,4 +84,35 @@ int WriteLog(char *fmt, ...)
 	return n;
 }
 
+//通过文件映射加载文件
+void * LoadFile(LPTSTR lpFilename)
+{
+	HANDLE hFile;
+	HANDLE hMapping;
+	void *ImageBase;
+
+	hFile = CreateFile(lpFilename, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL, 0);
+
+	if (!hFile)
+		return FALSE;
+
+	hMapping = CreateFileMapping(hFile, NULL, PAGE_READONLY, 0, 0, NULL);
+	if (!hMapping)
+	{
+		CloseHandle(hFile);
+		return FALSE;
+	}
+	ImageBase = MapViewOfFile(hMapping, FILE_MAP_READ, 0, 0, 0);
+	if (!ImageBase)
+	{
+		CloseHandle(hMapping);
+		CloseHandle(hFile);
+		return NULL;
+	}
+
+	return ImageBase;
+
+}
+
+
 #endif     //   FILEHANDLE_CPP 

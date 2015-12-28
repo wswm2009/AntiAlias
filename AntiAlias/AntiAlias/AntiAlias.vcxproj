@@ -102,6 +102,7 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\..\Desktop\imgsave.h" />
     <ClInclude Include="AntiAlias.h" />
     <ClInclude Include="AntiAliasDlg.h" />
     <ClInclude Include="PicHandler\AdjustImgHandler.h" />
@@ -109,6 +110,7 @@
     <ClInclude Include="PicHandler\defs.h" />
     <ClInclude Include="PicHandler\Filehandler.h" />
     <ClInclude Include="PicHandler\GdiPlusEnv.h" />
+    <ClInclude Include="PicHandler\mtdefine.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />

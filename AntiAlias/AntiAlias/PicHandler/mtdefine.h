@@ -14,9 +14,9 @@
 
 //ARGBÑÕÉ«Ë³Ðò±í
 #define MT_ALPHA	3
-#define MT_Red		2
-#define MT_Green	1
-#define MT_Blue		0
+#define MT_RED		2
+#define MT_GREEN	1
+#define MT_BLUE		0
 
 
 

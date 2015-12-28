@@ -58,6 +58,8 @@ void CAntiAliasDlg::DoDataExchange(CDataExchange* pDX)
 	CDialogEx::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_COMBO1, m_CBSize);
 	DDX_Control(pDX, IDC_EDIT1, m_EtToler);
+	DDX_Control(pDX, IDC_CHK_CTN, m_ChkCtn);
+	DDX_Control(pDX, IDC_CHECK2, m_ClearAlias);
 }
 
 BEGIN_MESSAGE_MAP(CAntiAliasDlg, CDialogEx)
@@ -187,7 +189,9 @@ void CAntiAliasDlg::OnBnClickedBtnLoad()
 void CAntiAliasDlg::OnBnClickedBtnAntialias()
 {
 	// TODO:  在此添加控件通知处理程序代码
-	
+	m_AdjustHandler.m_Toler = GetDlgItemInt(IDC_EDIT1);
+	m_AdjustHandler.m_Ctn = m_ChkCtn.GetCheck();
+	m_AdjustHandler.m_Clear = m_ClearAlias.GetCheck();
 	m_AdjustHandler.AntiAlias();
 }
 

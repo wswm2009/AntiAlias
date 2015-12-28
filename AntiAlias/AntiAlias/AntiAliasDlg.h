@@ -40,4 +40,7 @@ protected:
 public:
 	CEdit m_EtToler;
 	afx_msg void OnBnClickedBtnSvae();
+	// [CheckBox]Á¬Ðø
+	CButton m_ChkCtn;
+	CButton m_ClearAlias;
 };

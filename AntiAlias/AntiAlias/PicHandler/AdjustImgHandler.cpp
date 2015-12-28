@@ -33151,6 +33151,8 @@ CAdjustImgHandler::CAdjustImgHandler(void)
 {
 	m_pMainBitmap = NULL;
 	m_pResultBitmap = NULL;
+	m_Toler = 0;
+	m_Ctn = FALSE;
 }
 
 
@@ -33164,11 +33166,47 @@ void CAdjustImgHandler::SetParentHwnd(HWND hParent)
 {
 	m_hParentHwnd = hParent;
 }
+void CAdjustImgHandler::imgSave(BYTE* imgData, int width, int height, int stride, CString fileName, Gdiplus::PixelFormat pixelFormat = PixelFormat32bppARGB)
+{
+	CLSID Clsid;
+	GetEncoderClsid(L"image/bmp", &Clsid);
+	Gdiplus::Bitmap saveImg(width, height, stride, pixelFormat, imgData);
+	saveImg.Save(fileName.AllocSysString(), &Clsid);
+}
+//************************************
+// Method:    saveMask
+// FullName:  saveMask
+// Access:    public static 
+// Returns:   void
+// Qualifier: 保存单通道mask
+// Parameter: BYTE * mask     //mask数据
+// Parameter: int width       //mask宽，高
+// Parameter: int height     
+// Parameter: WCHAR * filePath //保存路径
+//************************************
+void CAdjustImgHandler::saveMask(BYTE* mask, int width, int height, CString filePath)
+{
+	int size = width*height;
+	BYTE* imgData = new BYTE[size * 4];
+
+	BYTE* tmpImg = imgData;
+	BYTE* tmpMask = mask;
+	for (int i = 0; i < size; ++i, tmpImg += 4, ++tmpMask)
+	{
+		tmpImg[MT_ALPHA] = 255;
+		tmpImg[MT_RED] = tmpImg[MT_GREEN] = tmpImg[MT_BLUE] = *tmpMask;
+	}
+	imgSave(imgData, width, height, width * 4, filePath);
+
+	SAFE_DELETE_ARRAY(imgData);
+}
 void CAdjustImgHandler::OnSaveImage(CString strImgPath)
 {
-	CLSID pngClsid;
-	GetEncoderClsid(L"image/bmp", &pngClsid);
-	m_pResultBitmap->Save(strImgPath, &pngClsid);
+	DWORD dwWidth = m_pMainBitmap->GetWidth();
+	DWORD dwHeight = m_pMainBitmap->GetHeight();
+	BYTE *pFileAddr = NULL;
+	pFileAddr = (BYTE *)LoadFile(L"C:\\MyLog\\Src_14700000Data.txt");
+	saveMask(pFileAddr, dwWidth, dwHeight, strImgPath);
 	return;
 }
 
@@ -33290,7 +33328,7 @@ void CAdjustImgHandler::AntiAlias()
 	POINT pt;
 	pt.x = 210;
 	pt.y = 90;
-	int Toler = 0x20;//容差
+	int Toler = m_Toler;//容差
 	char vSzie = 1;
 	char hSzie = 1;//默认为取样点  还有其他的1x1 3x3 5x5
 	if (m_pMainBitmap == NULL)
@@ -33298,7 +33336,25 @@ void CAdjustImgHandler::AntiAlias()
 
 	SAFE_DELETE(m_pResultBitmap);
 
-
+	unsigned char OutValues100[0x0100] =
+	{
+		0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f,
+		0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1a, 0x1b, 0x1c, 0x1d, 0x1e, 0x1f,
+		0x20, 0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27, 0x28, 0x29, 0x2a, 0x2b, 0x2c, 0x2d, 0x2e, 0x2f,
+		0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x3a, 0x3b, 0x3c, 0x3d, 0x3e, 0x3f,
+		0x40, 0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x47, 0x48, 0x49, 0x4a, 0x4b, 0x4c, 0x4d, 0x4e, 0x4f,
+		0x50, 0x51, 0x52, 0x53, 0x54, 0x55, 0x56, 0x57, 0x58, 0x59, 0x5a, 0x5b, 0x5c, 0x5d, 0x5e, 0x5f,
+		0x60, 0x61, 0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0x6a, 0x6b, 0x6c, 0x6d, 0x6e, 0x6f,
+		0x70, 0x71, 0x72, 0x73, 0x74, 0x75, 0x76, 0x77, 0x78, 0x79, 0x7a, 0x7b, 0x7c, 0x7d, 0x7e, 0xff,
+		0x80, 0x81, 0x82, 0x83, 0x84, 0x85, 0x86, 0x87, 0x88, 0x89, 0x8a, 0x8b, 0x8c, 0x8d, 0x8e, 0x8f,
+		0x90, 0x91, 0x92, 0x93, 0x94, 0x95, 0x96, 0x97, 0x98, 0x99, 0x9a, 0x9b, 0x9c, 0x9d, 0x9e, 0x9f,
+		0xa0, 0xa1, 0xa2, 0xa3, 0xa4, 0xa5, 0xa6, 0xa7, 0xa8, 0xa9, 0xaa, 0xab, 0xac, 0xad, 0xae, 0xaf,
+		0xb0, 0xb1, 0xb2, 0xb3, 0xb4, 0xb5, 0xb6, 0xb7, 0xb8, 0xb9, 0xba, 0xbb, 0xbc, 0xbd, 0xbe, 0xbf,
+		0xc0, 0xc1, 0xc2, 0xc3, 0xc4, 0xc5, 0xc6, 0xc7, 0xc8, 0xc9, 0xca, 0xcb, 0xcc, 0xcd, 0xce, 0xcf,
+		0xd0, 0xd1, 0xd2, 0xd3, 0xd4, 0xd5, 0xd6, 0xd7, 0xd8, 0xd9, 0xda, 0xdb, 0xdc, 0xdd, 0xde, 0xdf,
+		0xe0, 0xe1, 0xe2, 0xe3, 0xe4, 0xe5, 0xe6, 0xe7, 0xe8, 0xe9, 0xea, 0xeb, 0xec, 0xed, 0xee, 0xef,
+		0xf0, 0xf1, 0xf2, 0xf3, 0xf4, 0xf5, 0xf6, 0xf7, 0xf8, 0xf9, 0xfa, 0xfb, 0xfc, 0xfd, 0xfe, 0xff
+	};
 	RGBQUAD * pSrcRgb = NULL;
 	RGBQUAD * pResultRgb = NULL;
 	BitmapData SrcBmpData;
@@ -33340,6 +33396,7 @@ void CAdjustImgHandler::AntiAlias()
 	pvBuffB = ((BYTE *)pBuffB + pt.y*PicWidth + pt.x);
 	BYTE *pOutBuff3000 = new BYTE[0x3000];
 	ZeroMemory(pOutBuff3000, 0x3000);
+
 	//产生0x3000个字节的数据
 	sub_616990((int)pvBuffB,(int)pvBuffG,(int)pvBuffR,0,vSzie,hSzie,PicWidth,0,0,(int)pOutBuff3000);
 	BYTE *pOutbuff600 = new BYTE[0x600];
@@ -33353,8 +33410,27 @@ void CAdjustImgHandler::AntiAlias()
 	sub_EFCFE0((int)pUnknowStrc, (int)pOutBuff3000, pOutbuff600); //给0x600个字节的内存赋值
 
 	//消除锯齿第二部处理
-	BYTE *pOutBuff = new BYTE[PicWidth*PicHeight];
-	sub_619320((int)pBuffB, (int)pBuffG, (int)pBuffR, (int)pOutBuff, PicHeight, PicWidth, PicWidth, PicWidth, (int)pOutbuff600);
+	DWORD dwNewSize = PicWidth*PicHeight;
+	m_SaveBuff = new BYTE[dwNewSize];
+	sub_619320((int)pBuffB, (int)pBuffG, (int)pBuffR, (int)m_SaveBuff, PicHeight, PicWidth, PicWidth, PicWidth, (int)pOutbuff600);
+	
+	//后续处理:
+    if (!m_Ctn)//如果连续不勾选
+    {
+		//BYTE OutValues100[0x100];//为00到FF一系列字节  第一次调用真正第四步函数
+		sub_1AF6100((int)m_SaveBuff, m_SaveBuff, dwNewSize, (int)OutValues100);//对7F转FF的处理，会有些别的数据的处理
+    }
+	else
+	{
+		;
+	}
+
+
+	BYTE *pFileAddr = NULL;
+	pFileAddr = (BYTE *)LoadFile(L"C:\\MyLog\\Src_18def4_Data.txt");
+	BYTE bVal = 0;
+
+	AfxMessageBox(L"已经处理完成");
 
 }
 
@@ -33412,6 +33488,21 @@ unsigned long MyStrct[0x0078] =
 
 
 /////////////////这是Anti-Alias代码////////////////////////////////////
+
+
+_BYTE *__cdecl sub_1AF6100(int a1, _BYTE *a2, int a3, int a4)
+{
+	int v4=0; // ecx@1
+	_BYTE *result=0; // eax@1
+
+	v4 = a3;
+	for (result = a2; v4 > 0; ++result)
+	{
+		--v4;
+		*result = *(_BYTE *)(result[a1 - (_DWORD)a2] + a4);
+	}
+	return result;
+}
 int __cdecl sub_619320(int pRBuff, int pGBuff, int pBBuff, int pOutBuff, int PicHeight, int PicWidth, int _PicWidth, int __PicWidth, int pTempInBuff)
 {
 	int v9 = 0; // edi@1
@@ -41791,7 +41882,7 @@ void MakeMidValue(UCHAR *ArgValue, short ArgBright, short ArgContrast, long long
 
 }
 //GetEncoderClsid函数，方便的获得编码器的CLSID
-int CAdjustImgHandler:: GetEncoderClsid(const TCHAR* format, CLSID* pClsid)
+int CAdjustImgHandler::GetEncoderClsid(const TCHAR* format, CLSID* pClsid)
 {
 	UINT num= 0;
 	UINT size= 0;

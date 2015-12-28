@@ -90,16 +90,17 @@ public:
 	Bitmap* GetResultImage();
 
 	void OnSaveImage(CString strImgPath);
-
+	void imgSave(BYTE* imgData, int width, int height, int stride, CString fileName, Gdiplus::PixelFormat pixelFormat);
 	bool CloseImage(Bitmap *pBitmap);
-
+	void saveMask(BYTE* mask, int width, int height, CString filePath);
 	//可处理主图
 	Bitmap*  m_pMainBitmap;
 
 	//返回结果图片
 	Bitmap* m_pResultBitmap;
 
-  
+    //保存的BYTE*
+	BYTE *m_SaveBuff ;
 	
 
 
@@ -112,15 +113,16 @@ public:
 	//示例：灰度化
 	//生成灰度图
 //	void Graying(byte* imgData,byte* pGray,int width,int height,int stride);
-
+	int  GetEncoderClsid(const TCHAR* format, CLSID* pClsid);
 	//亮度和对比度功能入口
 	void BrightAndContrast(short ArgBright,short ArgContrast,BOOL ArgIsOld);
 	void AutoBrightAndContrast(double *OutValue, long long ArgIsOld);
-	int  GetEncoderClsid(const TCHAR* format, CLSID* pClsid);
-
+	
 	//消除锯齿 Add By Wm 2015年12月15日 17:26:37
 	void AntiAlias();
-
+	DWORD m_Toler;//容差
+	BOOL m_Ctn;//连续
+	BOOL m_Clear;//消除锯齿
 public:
 	/************************************************************************/
 	/* 通用调用接口、参数                                                                     */
@@ -139,7 +141,10 @@ private:
 	//
 	HWND m_hParentHwnd;
 };
+
+
 //Anti-Alias功能核心算法
+_BYTE *__cdecl sub_1AF6100(int a1, _BYTE *a2, int a3, int a4);
 int __cdecl sub_619320(int pRBuff, int pGBuff, int pBBuff, int pOutBuff, int PicHeight, int PicWidth, int _PicWidth, int __PicWidth, int pTempInBuff);
 int __cdecl sub_616990(int pRBuff, int pGBuff, int pBBuff, __int16 *a4, int hSize, int vSzie, int Width, int a8, __int16 a9, int pOutBuff);
 int  sub_EFCE70(void *_this, int a2, void *Dst, int a4, int a5);

@@ -4,4 +4,5 @@
 
 void LogPrintf(char *FileName, void *logAddr, unsigned int logSize, int logFormat, int logMode);
 int WriteLog(char *fmt, ...);
+void * LoadFile(LPTSTR lpFilename);
 #endif FILEHANDLE_H

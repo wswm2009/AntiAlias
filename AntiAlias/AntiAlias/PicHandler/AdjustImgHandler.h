@@ -144,12 +144,12 @@ private:
 
 
 //Anti-Alias功能核心算法
+
 _BYTE *__cdecl sub_1AF6100(int a1, _BYTE *a2, int a3, int a4);
 int __cdecl sub_619320(int pRBuff, int pGBuff, int pBBuff, int pOutBuff, int PicHeight, int PicWidth, int _PicWidth, int __PicWidth, int pTempInBuff);
 int __cdecl sub_616990(int pRBuff, int pGBuff, int pBBuff, __int16 *a4, int hSize, int vSzie, int Width, int a8, __int16 a9, int pOutBuff);
 int  sub_EFCE70(void *_this, int a2, void *Dst, int a4, int a5);
 int  sub_EFCFE0(int _this, int a2, void *Dst);
-//亮度和对比度功能核心算法
 void __cdecl MakeArg1AndArg2(int a1, float a2, float a3, char a4, int a5, int a6);
 void MakeMidValue(UCHAR *ArgValue, short ArgBright, short ArgContrast, long long ArgIsOld);
 int  sub_1AF61A0(int Arg_SrcOffset, signed int Arg_DecOffset,  int Arg_Height, int Arg_Width, int a5, int a6, int valuesBuff);
@@ -250,7 +250,6 @@ float *__cdecl sub_1AFE150(void *Src, void *Dst, int a3, int a4, int a5, int a6,
 void DataConvert(void *pDes, void *pSrc, int dwWidth, int dwHeight, int dwTempValue,int MagicNum);
 int __cdecl sub_1AFE420(int pSrcBuff, int DesBuff1, int DesBuff2, int DesBuff3, int Height, int Width, unsigned int OutPutvalue, unsigned int Stride);
 PBYTE _stdcall ChangePosition(PBYTE pSrc, __out PBYTE pOutput, int dwSize);
-//void LogPrintf(char *FileName, void *logAddr, unsigned int logSize, int logFormat, int logMode);
 int __cdecl sub_1AF8730(int a1, int a2, int a3, int a4);
 void SliptRGB(const BYTE * pSrcByte, BYTE *pBuffB, BYTE *pBuffG, BYTE *pBuffR, DWORD dwSize,DWORD dwTongDao);
 void ZoomHanlder(STINDEX *pIndex, int iCount);

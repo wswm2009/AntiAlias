@@ -33417,13 +33417,14 @@ void CAdjustImgHandler::AntiAlias()
 	//后续处理:
     if (!m_Ctn)//如果连续不勾选
     {
-		//BYTE OutValues100[0x100];//为00到FF一系列字节  第一次调用真正第四步函数
 		sub_1AF6100((int)m_SaveBuff, m_SaveBuff, dwNewSize, (int)OutValues100);//对7F转FF的处理，会有些别的数据的处理
     }
 	else
 	{
-		;
+		;//暂时不用考虑
 	}
+
+
 
 
 	BYTE *pFileAddr = NULL;
@@ -33489,6 +33490,88 @@ unsigned long MyStrct[0x0078] =
 
 /////////////////这是Anti-Alias代码////////////////////////////////////
 
+void MakeValeus100(BYTE * Data100,bool IsClear)
+{
+	int *v3 = 0;// esi@1
+	int v4 = 0;// ebx@1
+	int v5 = 0;// edi@1
+	int v6 = 0;// ecx@1
+	int v7 = 0;// ecx@1
+	bool v8 = 0;// zf@1
+	int v9 = 0;// ecx@6
+	int v10 = 0;// ecx@6
+	int v11 = 0;// ecx@7
+	int v12 = 0;// ecx@9
+	int result = 0;// eax@9
+	int v14 = 0;// eax@12
+	int v15 = 0;// eax@12
+	bool v16 = 0;// sf@12
+	unsigned __int8 v17 = 0;// of@12
+	int *v18 = 0;// eax@12
+	signed int v19 = 0;// ebx@16
+	__int16 v20 = 0;// cx@18
+	int v21 = 0;// eax@21
+	int v22 = 0;// [sp-10h] [bp-260h]@5
+	int v23 = 0;// [sp+0h] [bp-250h]@1
+	int v24 = 0;// [sp+10h] [bp-240h]@5
+	int v25 = 0;// [sp+14h] [bp-23Ch]@5
+	int v26 = 0;// [sp+18h] [bp-238h]@1
+	int v27 = 0;// [sp+1Ch] [bp-234h]@5
+	int v28 = 0;// [sp+20h] [bp-230h]@1
+	int *v29 = 0;// [sp+24h] [bp-22Ch]@1
+	int *v30 = 0;// [sp+28h] [bp-228h]@1
+	int v31 = 0;// [sp+2Ch] [bp-224h]@1
+	int v32 = 0;// [sp+30h] [bp-220h]@1
+	int v33 = 0;// [sp+34h] [bp-21Ch]@1
+	int v34 = 0;// [sp+38h] [bp-218h]@1
+	char v35[256] = {0};// [sp+3Ch] [bp-214h]@20
+	char v36 = 0;// [sp+13Ch] [bp-114h]@6
+	char v37 = 0;// [sp+1BBh] [bp-95h]@6
+	int *v38 = 0;// [sp+240h] [bp-10h]@1
+	int v39 = 0;// [sp+24Ch] [bp-4h]@1
+
+	if (IsClear)                // 如果勾选了消除锯齿
+	{
+		v30 = (int *)0xFE;
+		//v15 = 2 * GetByteValue(Data100);
+		v15 = 2 * 0x6F;
+		v28 = v15;
+		v17 = __OFSUB__(v15, 0xFE);
+		v8 = v15 == 0xFE;
+		v16 = (v15 - 0xFE) < 0;
+		v29 = (int *)0x80;
+		v18 = (int *)&v30;
+		if ((unsigned __int8)(v16 ^ v17) | v8)
+			v18 = &v28;
+		if (*v18 <= 0x80)
+			v18 = (int *)&v29;
+		v19 = *(_WORD *)v18;
+	}
+	else
+	{
+		v19 = 0xFE;
+	}
+	v28 = (unsigned __int16)(0xFF - v19);
+	v30 = (int *)v19;
+	v29 = (int *)((signed __int16)v28 / 2);
+	v20 = 0;
+	do
+	{
+		if (v20 > (signed __int16)v19)
+		{
+			v21 = ((signed __int16)v29 + 0xFF * (v20 - (signed __int16)v19)) / (signed __int16)v28;
+			LOWORD(v19) = (_WORD)v30;
+			v35[v20] = v21;
+		}
+		else
+		{
+			v35[v20] = 0;
+		}
+		++v20;
+	} while (v20 < 0x100);
+
+	memcpy(Data100, v35, 0x100);
+}
 
 _BYTE *__cdecl sub_1AF6100(int a1, _BYTE *a2, int a3, int a4)
 {

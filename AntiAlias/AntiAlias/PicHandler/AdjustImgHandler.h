@@ -113,7 +113,7 @@ public:
 	//示例：灰度化
 	//生成灰度图
 //	void Graying(byte* imgData,byte* pGray,int width,int height,int stride);
-	int  GetEncoderClsid(const TCHAR* format, CLSID* pClsid);
+	
 	//亮度和对比度功能入口
 	void BrightAndContrast(short ArgBright,short ArgContrast,BOOL ArgIsOld);
 	void AutoBrightAndContrast(double *OutValue, long long ArgIsOld);
@@ -141,10 +141,19 @@ private:
 	//
 	HWND m_hParentHwnd;
 };
-
+int  GetEncoderClsid(const TCHAR* format, CLSID* pClsid);
 
 //Anti-Alias功能核心算法
+int __stdcall sub_18A4630(unsigned int a1, unsigned int a2, int a3, int a4);
+__int64 __stdcall sub_18A42D0(int a1, int a2, int a3, int a4);
+BYTE GetByteValue(BYTE *v24);
+void MakeValeus100(BYTE * Data100, BYTE byteVal,bool IsClear);
+int __cdecl sub_618350(int a1, int a2, signed int a3, int a4);
+char __cdecl sub_6180E0(int a1, int a2, signed int a3, int a4, int a5);
 
+
+void __cdecl sub_618240(int a1, signed int a2, int a3, int a4);
+void __cdecl sub_617F40(int a1, signed int a2, int a3, int a4, int a5);
 _BYTE *__cdecl sub_1AF6100(int a1, _BYTE *a2, int a3, int a4);
 int __cdecl sub_619320(int pRBuff, int pGBuff, int pBBuff, int pOutBuff, int PicHeight, int PicWidth, int _PicWidth, int __PicWidth, int pTempInBuff);
 int __cdecl sub_616990(int pRBuff, int pGBuff, int pBBuff, __int16 *a4, int hSize, int vSzie, int Width, int a8, __int16 a9, int pOutBuff);

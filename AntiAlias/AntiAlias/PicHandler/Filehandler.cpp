@@ -114,5 +114,52 @@ void * LoadFile(LPTSTR lpFilename)
 
 }
 
+void imgSave(BYTE* imgData, int width, int height, int stride, CString fileName, Gdiplus::PixelFormat pixelFormat = PixelFormat32bppARGB)
+{
+	CLSID Clsid;
+	GetEncoderClsid(L"image/bmp", &Clsid);
+	Gdiplus::Bitmap saveImg(width, height, stride, pixelFormat, imgData);
+	saveImg.Save(fileName.AllocSysString(), &Clsid);
+}
+//************************************
+// Method:    saveMask
+// FullName:  saveMask
+// Access:    public static 
+// Returns:   void
+// Qualifier: 保存单通道mask
+// Parameter: BYTE * mask     //mask数据
+// Parameter: int width       //mask宽，高
+// Parameter: int height     
+// Parameter: WCHAR * filePath //保存路径
+//************************************
+void saveMask(BYTE* mask, int width, int height, CString filePath)
+{
+	int size = width*height;
+	BYTE* imgData = new BYTE[size * 4];
+
+	BYTE* tmpImg = imgData;
+	BYTE* tmpMask = mask;
+	for (int i = 0; i < size; ++i, tmpImg += 4, ++tmpMask)
+	{
+		tmpImg[MT_ALPHA] = 255;
+		tmpImg[MT_RED] = tmpImg[MT_GREEN] = tmpImg[MT_BLUE] = *tmpMask;
+	}
+	imgSave(imgData, width, height, width * 4, filePath);
+
+	SAFE_DELETE_ARRAY(imgData);
+}
+void MySaveImage( BYTE *pbuff,CString strImgPath,DWORD nWidth,DWORD nHeight,bool isMask)
+{
+	if (isMask)
+	{
+		saveMask(pbuff, nWidth, nHeight, strImgPath);
+	}
+	else
+	{
+		imgSave(pbuff, nWidth, nHeight, nWidth * 4, strImgPath);
+	}
+	
+	return;
+}
 
 #endif     //   FILEHANDLE_CPP 

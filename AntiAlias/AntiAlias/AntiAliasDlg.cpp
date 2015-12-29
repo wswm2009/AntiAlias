@@ -108,7 +108,7 @@ BOOL CAntiAliasDlg::OnInitDialog()
 	m_CBSize.InsertString(1,L"1x1");
 	m_CBSize.InsertString(2,L"3x3");
 	m_CBSize.SetCurSel(0);
-
+	m_ClearAlias.SetCheck(1);
 	m_EtToler.SetWindowText(L"32");
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }

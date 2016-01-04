@@ -123,6 +123,8 @@ public:
 	DWORD m_Toler;//容差
 	BOOL m_Ctn;//连续
 	BOOL m_Clear;//消除锯齿
+	POINT m_Pt;//点击的坐标
+	BOOL m_IsFinish;//是否完成
 public:
 	/************************************************************************/
 	/* 通用调用接口、参数                                                                     */
@@ -144,10 +146,10 @@ private:
 int  GetEncoderClsid(const TCHAR* format, CLSID* pClsid);
 
 //Anti-Alias功能核心算法
+void MakeValeus100(BYTE * Data100, BYTE byteVal, bool IsClear);
 int __stdcall sub_18A4630(unsigned int a1, unsigned int a2, int a3, int a4);
-__int64 __stdcall sub_18A42D0(int a1, int a2, int a3, int a4);
 BYTE GetByteValue(BYTE *v24);
-void MakeValeus100(BYTE * Data100, BYTE byteVal,bool IsClear);
+__int64 __stdcall sub_18A42D0(int a1, int a2, int a3, int a4);
 int __cdecl sub_618350(int a1, int a2, signed int a3, int a4);
 char __cdecl sub_6180E0(int a1, int a2, signed int a3, int a4, int a5);
 

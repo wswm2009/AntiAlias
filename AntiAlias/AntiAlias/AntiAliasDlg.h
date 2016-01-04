@@ -43,4 +43,9 @@ public:
 	// [CheckBox]连续
 	CButton m_ChkCtn;
 	CButton m_ClearAlias;
+	afx_msg void OnBnClickedChkCtn();
+	// 表示点击的X坐标
+	int m_EditX;
+	// 表示点击的Y坐标
+	int m_EditY;
 };

@@ -49,6 +49,8 @@ END_MESSAGE_MAP()
 
 CAntiAliasDlg::CAntiAliasDlg(CWnd* pParent /*=NULL*/)
 	: CDialogEx(CAntiAliasDlg::IDD, pParent)
+	, m_EditX(0)
+	, m_EditY(0)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
@@ -60,6 +62,8 @@ void CAntiAliasDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_EDIT1, m_EtToler);
 	DDX_Control(pDX, IDC_CHK_CTN, m_ChkCtn);
 	DDX_Control(pDX, IDC_CHECK2, m_ClearAlias);
+	DDX_Text(pDX,IDC_EDIT2,m_EditX);
+	DDX_Text(pDX, IDC_EDIT3, m_EditY);
 }
 
 BEGIN_MESSAGE_MAP(CAntiAliasDlg, CDialogEx)
@@ -69,6 +73,7 @@ BEGIN_MESSAGE_MAP(CAntiAliasDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BTN_LOAD, &CAntiAliasDlg::OnBnClickedBtnLoad)
 	ON_BN_CLICKED(IDC_BTN_ANTIALIAS, &CAntiAliasDlg::OnBnClickedBtnAntialias)
 	ON_BN_CLICKED(IDC_BTN_SVAE, &CAntiAliasDlg::OnBnClickedBtnSvae)
+	ON_BN_CLICKED(IDC_CHK_CTN, &CAntiAliasDlg::OnBnClickedChkCtn)
 END_MESSAGE_MAP()
 
 
@@ -110,6 +115,10 @@ BOOL CAntiAliasDlg::OnInitDialog()
 	m_CBSize.SetCurSel(0);
 	m_ClearAlias.SetCheck(1);
 	m_EtToler.SetWindowText(L"32");
+
+	m_EditX = 0xD2;
+	m_EditY = 0x5A;
+	UpdateData(FALSE);
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
 
@@ -189,9 +198,16 @@ void CAntiAliasDlg::OnBnClickedBtnLoad()
 void CAntiAliasDlg::OnBnClickedBtnAntialias()
 {
 	// TODO:  在此添加控件通知处理程序代码
+	if (!m_pBitmap)
+	{
+		AfxMessageBox(L"请先打开图片再消除锯齿");
+	}
+	UpdateData();
 	m_AdjustHandler.m_Toler = GetDlgItemInt(IDC_EDIT1);
 	m_AdjustHandler.m_Ctn = m_ChkCtn.GetCheck();
 	m_AdjustHandler.m_Clear = m_ClearAlias.GetCheck();
+	m_AdjustHandler.m_Pt.x = m_EditX;
+	m_AdjustHandler.m_Pt.y= m_EditY;
 	m_AdjustHandler.AntiAlias();
 }
 
@@ -202,6 +218,12 @@ void CAntiAliasDlg::OnBnClickedBtnSvae()
 	CString defaultDir = _T("C:\\");   //默认打开的文件路径  
 	CString fileName = _T("test.bmp");         //默认打开的文件名  
 	CString filter = _T("文件 (*.doc; *.ppt; *.xls)|*.doc;*.ppt;*.xls||");   //文件过虑的类
+	if (!m_AdjustHandler.m_IsFinish)
+	{
+		AfxMessageBox(L"请先处理完再保存图片");
+		return;
+	}
+	
 	CFileDialog dlg(FALSE, NULL, fileName, OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT, _T("All File |*.*|Jpeg File(*.jpg;*.jpeg;*.jpe)|*.jpg;*.jpeg;*.jpe|Windows(*.bmp)|*.bmp|CompuServe GIF(*.gif)|*.gif|Png文件(*.png)|*.png||"), this);
 	dlg.m_ofn.lpstrTitle = L"Save Image";
 	if (dlg.DoModal() == IDOK)
@@ -217,5 +239,16 @@ void CAntiAliasDlg::OnBnClickedBtnSvae()
 			MessageBox(L"请先载入图片再保存");
 		}
 
+	}
+}
+
+
+void CAntiAliasDlg::OnBnClickedChkCtn()
+{
+	// TODO:  在此添加控件通知处理程序代码
+	if (m_ChkCtn.GetCheck())
+	{
+		AfxMessageBox(L"勾选连续的情况还未处理");
+		m_ChkCtn.SetCheck(BST_UNCHECKED);
 	}
 }

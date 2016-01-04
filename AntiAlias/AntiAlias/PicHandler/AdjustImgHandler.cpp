@@ -33202,10 +33202,13 @@ void CAdjustImgHandler::saveMask(BYTE* mask, int width, int height, CString file
 }
 void CAdjustImgHandler::OnSaveImage(CString strImgPath)
 {
+
+
 	DWORD dwWidth = m_pMainBitmap->GetWidth();
 	DWORD dwHeight = m_pMainBitmap->GetHeight();
 	BYTE *pFileAddr = NULL;
-	pFileAddr = (BYTE *)LoadFile(L"C:\\MyLog\\Src_14700000Data.txt");
+	//pFileAddr = (BYTE *)LoadFile(L"C:\\MyLog\\m_SaveBuff1_1900.txt");
+	pFileAddr = m_SaveBuff;
 	saveMask(pFileAddr, dwWidth, dwHeight, strImgPath);
 	return;
 }
@@ -33326,8 +33329,9 @@ void CAdjustImgHandler::BrightAndContrast(short ArgBright,short ArgContrast,BOOL
 void CAdjustImgHandler::AntiAlias()
 {
 	POINT pt;
-	pt.x = 210;
-	pt.y = 90;
+	pt = m_Pt;
+	//pt.x = 0xd2;
+	//pt.y = 0x5A;
 	int Toler = m_Toler;//容差
 	char vSzie = 1;
 	char hSzie = 1;//默认为取样点  还有其他的1x1 3x3 5x5
@@ -33399,8 +33403,9 @@ void CAdjustImgHandler::AntiAlias()
 
 	//产生0x3000个字节的数据
 	sub_616990((int)pvBuffB,(int)pvBuffG,(int)pvBuffR,0,vSzie,hSzie,PicWidth,0,0,(int)pOutBuff3000);
+	LogPrintf("C:\\MyLog\\OutBuff_3000.txt", pOutBuff3000, 0x3000, 0, 0);
 	BYTE *pOutbuff600 = new BYTE[0x600];
-	ZeroMemory(pOutBuff3000, 0x600);
+	ZeroMemory(pOutbuff600, 0x600);
 	BYTE *pUnknowStrc = new BYTE[0x148];
 	ZeroMemory(pUnknowStrc, 0x148);
 	*(pUnknowStrc + 0x130) = 0;
@@ -33408,17 +33413,21 @@ void CAdjustImgHandler::AntiAlias()
 	*(pUnknowStrc + 0x136) = 1;//1代表勾选了 消除锯齿
 	//从0x3000字节的数据产生0x600个字节的数据
 	sub_EFCFE0((int)pUnknowStrc, (int)pOutBuff3000, pOutbuff600); //给0x600个字节的内存赋值
+	//LogPrintf("C:\\MyLog\\OutBuff_600.txt", pOutbuff600, 0x600, 0, 0);
+
 
 	//消除锯齿第二部处理
 	DWORD dwNewSize = PicWidth*PicHeight;
 	m_SaveBuff = new BYTE[dwNewSize];
 	sub_619320((int)pBuffB, (int)pBuffG, (int)pBuffR, (int)m_SaveBuff, PicHeight, PicWidth, PicWidth, PicWidth, (int)pOutbuff600);
-	MySaveImage(m_SaveBuff, CString("C:\\MyPic\\Pic1-1.bmp"), PicWidth, PicHeight,true);
+	//LogPrintf("C:\\MyLog\\m_SaveBuff.txt", m_SaveBuff, dwNewSize, 0, 0);
+	MySaveImage(m_SaveBuff, L"C:\\MyPic\\Pic1-1.bmp", PicWidth, PicHeight,true);
 	//后续处理:
     if (!m_Ctn)//如果连续不勾选
     {
 		sub_1AF6100((int)m_SaveBuff, m_SaveBuff, dwNewSize, (int)OutValues100);//对7F转FF的处理，会有些别的数据的处理
-		MySaveImage(m_SaveBuff, CString("C:\\MyPic\\Pic2-1.bmp"), PicWidth, PicHeight,true);
+		LogPrintf("C:\\MyLog\\m_SaveBuff.txt", m_SaveBuff, dwNewSize, 0, 0);
+		MySaveImage(m_SaveBuff, L"C:\\MyPic\\Pic2-1.bmp", PicWidth, PicHeight,true);
     }
 	else
 	{
@@ -33430,39 +33439,33 @@ void CAdjustImgHandler::AntiAlias()
 		//1.第1小步:
 		BYTE OutValues800[0x800] = {0};//局部数组 0x800个字节
 		sub_617F40((int)m_SaveBuff, PicHeight, PicWidth, PicWidth, (int)OutValues800);//消除锯齿第三步->第一小步
-		//LogPrintf("C:\\MyLog\\OutValues800.txt", OutValues800, 0x800, 0, 0);
+		//LogPrintf("C:\\MyLog\\OutValues_800.txt", OutValues800, 0x800, 0, 0);
 
 		//2.第2小步:
 		sub_618240((int)m_SaveBuff, PicHeight, PicWidth, PicWidth);//消除锯齿第三步->第二小步
-		MySaveImage(m_SaveBuff, CString("C:\\MyPic\\Pic3-1.bmp"), PicWidth, PicHeight,true);
-		LogPrintf("C:\\MyLog\\m_SaveBuff2.txt", m_SaveBuff, 0x19000, 0, 0);
+		MySaveImage(m_SaveBuff, L"C:\\MyPic\\Pic3-1.bmp", PicWidth, PicHeight,true);
+	//	LogPrintf("C:\\MyLog\\m_SaveBuff2_1900.txt", m_SaveBuff, dwNewSize, 0, 0);
 
 		//3.第3小步:
 		sub_6180E0((int)m_SaveBuff, PicHeight, PicWidth, PicWidth,(int)OutValues800);//消除锯齿第三步->第三小步
-
+		//LogPrintf("C:\\MyLog\\m_SaveBuff.txt", m_SaveBuff, dwNewSize, 0, 0);
+		//LogPrintf("C:\\MyLog\\OutValues800.txt", OutValues800, 0x800, 0, 0);
 		//4.第4小步:
 		sub_618350((int)m_SaveBuff, PicHeight, PicWidth, PicWidth);//消除锯齿第三步->第四小步
-		MySaveImage(m_SaveBuff, CString("C:\\MyPic\\Pic3-2.bmp"), PicWidth, PicHeight, true);
-
+		//LogPrintf("C:\\MyLog\\m_SaveBuff.txt", m_SaveBuff, dwNewSize, 0, 0);
+		MySaveImage(m_SaveBuff, L"C:\\MyPic\\Pic3-2.bmp", PicWidth, PicHeight, true);
 
 		//5.第5小步:
 		BYTE byteVal = GetByteValue(OutValues800);
 
 		//6.接下来会有一段代码是产生0x100个字节为最终用它来修正m_SaveBuff的
-		MakeValeus100(OutValues100,byteVal,m_Clear);
-
+		MakeValeus100(OutValues100, byteVal, m_Clear);
+	
 		//7.第7小步
 		sub_1AF6100((int)m_SaveBuff, m_SaveBuff, dwNewSize, (int)OutValues100);//对7F转FF的处理，会有些别的数据的处理
-		MySaveImage(m_SaveBuff, CString("C:\\MyPic\\Pic3-3.bmp"), PicWidth, PicHeight, true);
-
+		MySaveImage(m_SaveBuff, L"C:\\MyPic\\Pic3-3.bmp", PicWidth, PicHeight, true);
 	}
-
-	/* 
-	BYTE *pFileAddr = NULL;
-	pFileAddr = (BYTE *)LoadFile(L"C:\\MyLog\\Src_18def4_Data.txt");
-	BYTE bVal = 0;
-	*/
-
+	m_IsFinish = TRUE;
 	AfxMessageBox(L"已经处理完成");
 
 }
@@ -33521,7 +33524,88 @@ unsigned long MyStrct[0x0078] =
 
 
 /////////////////这是Anti-Alias代码////////////////////////////////////
-//消除锯齿第三步->第五小步
+void MakeValeus100(BYTE * Data100, BYTE byteVal, bool IsClear)
+{
+	int *v3 = 0;// esi@1
+	int v4 = 0;// ebx@1
+	int v5 = 0;// edi@1
+	int v6 = 0;// ecx@1
+	int v7 = 0;// ecx@1
+	bool v8 = 0;// zf@1
+	int v9 = 0;// ecx@6
+	int v10 = 0;// ecx@6
+	int v11 = 0;// ecx@7
+	int v12 = 0;// ecx@9
+	int result = 0;// eax@9
+	int v14 = 0;// eax@12
+	int v15 = 0;// eax@12
+	bool v16 = 0;// sf@12
+	unsigned __int8 v17 = 0;// of@12
+	int *v18 = 0;// eax@12
+	signed int v19 = 0;// ebx@16
+	__int16 v20 = 0;// cx@18
+	int v21 = 0;// eax@21
+	int v22 = 0;// [sp-10h] [bp-260h]@5
+	int v23 = 0;// [sp+0h] [bp-250h]@1
+	int v24 = 0;// [sp+10h] [bp-240h]@5
+	int v25 = 0;// [sp+14h] [bp-23Ch]@5
+	int v26 = 0;// [sp+18h] [bp-238h]@1
+	int v27 = 0;// [sp+1Ch] [bp-234h]@5
+	int v28 = 0;// [sp+20h] [bp-230h]@1
+	int *v29 = 0;// [sp+24h] [bp-22Ch]@1
+	int *v30 = 0;// [sp+28h] [bp-228h]@1
+	int v31 = 0;// [sp+2Ch] [bp-224h]@1
+	int v32 = 0;// [sp+30h] [bp-220h]@1
+	int v33 = 0;// [sp+34h] [bp-21Ch]@1
+	int v34 = 0;// [sp+38h] [bp-218h]@1
+	char v35[256] = { 0 };// [sp+3Ch] [bp-214h]@20
+	char v36 = 0;// [sp+13Ch] [bp-114h]@6
+	char v37 = 0;// [sp+1BBh] [bp-95h]@6
+	int *v38 = 0;// [sp+240h] [bp-10h]@1
+	int v39 = 0;// [sp+24Ch] [bp-4h]@1
+
+	if (IsClear)                // 如果勾选了消除锯齿
+	{
+		v30 = (int *)0xFE;
+		//v15 = 2 * GetByteValue(Data100);
+		v15 = 2 * byteVal;
+		v28 = v15;
+		v17 = __OFSUB__(v15, 0xFE);
+		v8 = v15 == 0xFE;
+		v16 = (v15 - 0xFE) < 0;
+		v29 = (int *)0x80;
+		v18 = (int *)&v30;
+		if ((unsigned __int8)(v16 ^ v17) | v8)
+			v18 = &v28;
+		if (*v18 <= 0x80)
+			v18 = (int *)&v29;
+		v19 = *(_WORD *)v18;
+	}
+	else
+	{
+		v19 = 0xFE;
+	}
+	v28 = (unsigned __int16)(0xFF - v19);
+	v30 = (int *)v19;
+	v29 = (int *)((signed __int16)v28 / 2);
+	v20 = 0;
+	do
+	{
+		if (v20 > (signed __int16)v19)
+		{
+			v21 = ((signed __int16)v29 + 0xFF * (v20 - (signed __int16)v19)) / (signed __int16)v28;
+			LOWORD(v19) = (_WORD)v30;
+			v35[v20] = v21;
+		}
+		else
+		{
+			v35[v20] = 0;
+		}
+		++v20;
+	} while (v20 < 0x100);
+
+	memcpy(Data100, v35, 0x100);
+}
 int __stdcall sub_18A4630(unsigned int a1, unsigned int a2, int a3, int a4)
 {
 	signed int v4 =0;// edi@1
@@ -33637,90 +33721,43 @@ BYTE GetByteValue(BYTE *v24)
 
 	return v21;
 }
-void MakeValeus100(BYTE * Data100,BYTE byteVal, bool IsClear)
+int __cdecl sub_618350(int a1, int a2, signed int a3, int a4)
 {
-	int *v3 = 0;// esi@1
-	int v4 = 0;// ebx@1
-	int v5 = 0;// edi@1
-	int v6 = 0;// ecx@1
-	int v7 = 0;// ecx@1
-	bool v8 = 0;// zf@1
-	int v9 = 0;// ecx@6
-	int v10 = 0;// ecx@6
-	int v11 = 0;// ecx@7
-	int v12 = 0;// ecx@9
-	int result = 0;// eax@9
-	int v14 = 0;// eax@12
-	int v15 = 0;// eax@12
-	bool v16 = 0;// sf@12
-	unsigned __int8 v17 = 0;// of@12
-	int *v18 = 0;// eax@12
-	signed int v19 = 0;// ebx@16
-	__int16 v20 = 0;// cx@18
-	int v21 = 0;// eax@21
-	int v22 = 0;// [sp-10h] [bp-260h]@5
-	int v23 = 0;// [sp+0h] [bp-250h]@1
-	int v24 = 0;// [sp+10h] [bp-240h]@5
-	int v25 = 0;// [sp+14h] [bp-23Ch]@5
-	int v26 = 0;// [sp+18h] [bp-238h]@1
-	int v27 = 0;// [sp+1Ch] [bp-234h]@5
-	int v28 = 0;// [sp+20h] [bp-230h]@1
-	int *v29 = 0;// [sp+24h] [bp-22Ch]@1
-	int *v30 = 0;// [sp+28h] [bp-228h]@1
-	int v31 = 0;// [sp+2Ch] [bp-224h]@1
-	int v32 = 0;// [sp+30h] [bp-220h]@1
-	int v33 = 0;// [sp+34h] [bp-21Ch]@1
-	int v34 = 0;// [sp+38h] [bp-218h]@1
-	char v35[256] = { 0 };// [sp+3Ch] [bp-214h]@20
-	char v36 = 0;// [sp+13Ch] [bp-114h]@6
-	char v37 = 0;// [sp+1BBh] [bp-95h]@6
-	int *v38 = 0;// [sp+240h] [bp-10h]@1
-	int v39 = 0;// [sp+24Ch] [bp-4h]@1
+	int result = 0;// =0;//@1
+	int v5 = 0;// esi@2
+	int v6 = 0;// edx@4
+	int i = 0;// edx@9
 
-	if (IsClear)                // 如果勾选了消除锯齿
+	result = a2;
+	if (a2 > 0)
 	{
-		v30 = (int *)0xFE;
-		//v15 = 2 * GetByteValue(Data100);
-		v15 = 2 * byteVal;
-		v28 = v15;
-		v17 = __OFSUB__(v15, 0xFE);
-		v8 = v15 == 0xFE;
-		v16 = (v15 - 0xFE) < 0;
-		v29 = (int *)0x80;
-		v18 = (int *)&v30;
-		if ((unsigned __int8)(v16 ^ v17) | v8)
-			v18 = &v28;
-		if (*v18 <= 0x80)
-			v18 = (int *)&v29;
-		v19 = *(_WORD *)v18;
-	}
-	else
-	{
-		v19 = 0xFE;
-	}
-	v28 = (unsigned __int16)(0xFF - v19);
-	v30 = (int *)v19;
-	v29 = (int *)((signed __int16)v28 / 2);
-	v20 = 0;
-	do
-	{
-		if (v20 > (signed __int16)v19)
+		v5 = a1;
+		do
 		{
-			v21 = ((signed __int16)v29 + 0xFF * (v20 - (signed __int16)v19)) / (signed __int16)v28;
-			LOWORD(v19) = (_WORD)v30;
-			v35[v20] = v21;
-		}
-		else
-		{
-			v35[v20] = 0;
-		}
-		++v20;
-	} while (v20 < 0x100);
-
-	memcpy(Data100, v35, 0x100);
+			result = v5;
+			if (a3 > 1)
+			{
+				v6 = a3 - 1;
+				do
+				{
+					if (*(_BYTE *)(result + 1) >= 0x80u && *(_BYTE *)result < 0x80u)
+						*(_BYTE *)result += -128;
+					++result;
+					--v6;
+				} while (v6);
+			}
+			for (i = a3 - 1; i > 0; --result)
+			{
+				if (*(_BYTE *)(result - 1) >= 0x80u && *(_BYTE *)result < 0x80u)
+					*(_BYTE *)result += -128;
+				--i;
+			}
+			v5 += a4;
+			--a2;
+		} while (a2);
+	}
+	return result;
 }
-
-//消除锯齿第三步->第三小步
 char __cdecl sub_6180E0(int a1, int a2, signed int a3, int a4, int a5)
 {
 	int v5 = 0;// =0;//@1
@@ -33782,44 +33819,7 @@ char __cdecl sub_6180E0(int a1, int a2, signed int a3, int a4, int a5)
 	return v5;
 }
 
-//消除锯齿第三步->第四小步
-int __cdecl sub_618350(int a1, int a2, signed int a3, int a4)
-{
-	int result = 0;// =0;//@1
-	int v5 = 0;// esi@2
-	int v6 = 0;// edx@4
-	int i = 0;// edx@9
 
-	result = a2;
-	if (a2 > 0)
-	{
-		v5 = a1;
-		do
-		{
-			result = v5;
-			if (a3 > 1)
-			{
-				v6 = a3 - 1;
-				do
-				{
-					if (*(_BYTE *)(result + 1) >= 0x80u && *(_BYTE *)result < 0x80u)
-						*(_BYTE *)result += -128;
-					++result;
-					--v6;
-				} while (v6);
-			}
-			for (i = a3 - 1; i > 0; --result)
-			{
-				if (*(_BYTE *)(result - 1) >= 0x80u && *(_BYTE *)result < 0x80u)
-					*(_BYTE *)result += -128;
-				--i;
-			}
-			v5 += a4;
-			--a2;
-		} while (a2);
-	}
-	return result;
-}
 
 void __cdecl sub_618240(int a1, signed int a2, int a3, int a4)
 {
@@ -33974,10 +33974,9 @@ int __cdecl sub_619320(int pRBuff, int pGBuff, int pBBuff, int pOutBuff, int Pic
 				{
 					v13 = *(_BYTE *)pRBuff++;
 					v14 = *(_BYTE *)pGBuff++;
-					v15 = *(_BYTE *)pBBuff;
+					v15 = *(_BYTE *)pBBuff++;
 					v16 = v13;
 					v17 = v14;
-					++pBBuff;
 					v18 = v14 + v12 + 0x100;
 					BYTE3(_PicWidth) = *(_BYTE *)(v16 + v12);
 					if (*(_BYTE *)v18 >= BYTE3(_PicWidth))
@@ -34001,13 +34000,14 @@ int __cdecl sub_619320(int pRBuff, int pGBuff, int pBBuff, int pOutBuff, int Pic
 					if (*(_BYTE *)v24 >= BYTE3(_PicWidth))
 						v24 = (int)((char *)&_PicWidth + 3);
 					*(_BYTE *)pOutBuff = *(_BYTE *)v24;
-					if (0xFC==iCount)
+					if (0x15aB==iCount)
 					{
 						gDebugValue += 0x20;
 					}
 					iCount++;
 					//LogPrintf("C:\\MyLog\\DesData2.txt", (void *)pOutBuff, 1, 0, 0);
-					v25 = __PicWidth-- == 1;
+					__PicWidth--;
+					v25 = (__PicWidth== 1);
 					++pOutBuff;
 				} while (!v25);
 				v9 = PicWidth;
